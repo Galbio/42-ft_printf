@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:39:50 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/08 14:11:49 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/08 17:12:19 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,15 @@ size_t	ft_min(int a, int b)
 	if (a < b)
 		return (a);
 	return (b);
+}
+
+void	init_flags(int *flags)
+{
+	int	i;
+
+	i = -1;
+	while (++i < 9)
+		flags[i] = 0;
 }
 
 size_t	ft_strlen(char *str)
@@ -151,6 +160,14 @@ void	ft_putnbr_times(int long nb, size_t len)
 	write(1, &("0123456789"[nb % 10]), 1);
 }
 
+void	ft_putaddr_times(unsigned long addr, size_t len)
+{
+	if (!len)
+		return ;
+	ft_putaddr_times(addr / 16, len - 1);
+	write(1, &("0123456789abcdef"[addr % 16]), 1);
+}
+
 void	ft_handle_int_flags(int *flags, size_t *len, int nb)
 {
 	if (flags[6])
@@ -169,11 +186,11 @@ int	ft_write_integer(int nb, int *flags, size_t res)
 
 	len = ft_log(nb, 10);
 	ft_handle_int_flags(flags, &len, nb);
-	if (flags[2])
+	if (nb >= 0 && flags[2])
 		res += ft_write_and_return(' ', 1);
-	while (!flags[4] && flags[7] && !flags[5]
-		&& (len + res + (nb < 0 || flags[1] || flags[2])) < flags[7])
-			res += ft_write_and_return(' ', 1);
+	while (!flags[4] && flags[7] && !flags[5] && (len + res
+			+ (nb < 0 || flags[1] || (nb >= 0 && flags[2]))) < (size_t)flags[7])
+		res += ft_write_and_return(' ', 1);
 	if (nb < 0)
 		res += ft_write_and_return('-', 1);
 	else if (flags[1])
@@ -181,7 +198,7 @@ int	ft_write_integer(int nb, int *flags, size_t res)
 	if (flags[5])
 		len = ft_max(flags[7] - res, len);
 	ft_putnbr_times(nb, len);
-	while (flags[4] && ((len + res) < flags[7]))
+	while (flags[4] && ((len + res) < (size_t)flags[7]))
 		res += ft_write_and_return(' ', 1);
 	return (res + len);
 }
@@ -200,14 +217,65 @@ int	ft_write_unsigned(unsigned int nb, int *flags)
 	if ((flags[6] || flags[4]) && flags[5])
 		flags[5] = 0;
 	while (!flags[4] && flags[7] && !flags[5]
-		&& ((len + res) < flags[7]))
-			res += ft_write_and_return(' ', 1);
+		&& ((len + res) < (size_t)flags[7]))
+		res += ft_write_and_return(' ', 1);
 	if (flags[5])
 		len = ft_max(flags[7] - res, len);
 	ft_putnbr_times(nb, len);
-	while (flags[4] && ((len + res) < flags[7]))
+	while (flags[4] && ((len + res) < (size_t)flags[7]))
 		res += ft_write_and_return(' ', 1);
 	return (res + len);
+}
+
+void	ft_manage_addr_bonus_flags(unsigned long addr, int *flags)
+{
+	
+}
+
+int	ft_write_addr(unsigned long addr, int *flags)
+{
+	int	res;
+	int	len;
+
+	if (!addr)
+	{
+		init_flags(flags);
+		write(1, "(nil)", 5);
+		return (5);
+	}
+	res = 0;
+	len = ft_log(addr, 16);
+	if (flags[6])
+		len = ft_max(len, flags[8]);
+	if (flags[6] && !flags[8] && !addr)
+		len = 0;
+	if (flags[1] && flags[2])
+		flags[2] = 0;
+	if ((flags[6] || flags[4] && flags[5]))
+		flags[5] = 0;
+	while (!flags[4] && flags[7] && !flags[5]
+		&& (((flags[1] || flags[2]) + res + len + 2) < (size_t)flags[7]))
+		res += ft_write_and_return(' ', 1);
+	if (flags[2])
+		res += ft_write_and_return(' ', 1);
+	else if (flags[1])
+		res += ft_write_and_return('+', 1);
+	if (flags[5])
+		len = ft_max(flags[7] - res, len);
+	write(1, "0x", 2);
+	ft_putaddr_times(addr, len);
+	while (flags[4] && ((len + res + 2) < (size_t)flags[7]))
+		res += ft_write_and_return(' ', 1);
+	return (res + len + 2);
+}
+
+int	ft_write_hexa(unsigned int hex, int *flags, char *base)
+{
+	int	res;
+	int	len;
+
+	len = ft_log(hex, 16);
+	res = 0;
 }
 
 int	ft_start_writers(va_list args, int *flags)
@@ -222,20 +290,11 @@ int	ft_start_writers(va_list args, int *flags)
 		return (ft_write_integer(va_arg(args, int), flags, 0));
 	else if (flags[0] == 'u')
 		return (ft_write_unsigned(va_arg(args, unsigned int), flags));
-	/*
+	else if (flags[0] == 'p')
+		return (ft_write_addr(va_arg(args, unsigned long), flags));
 	else if (flags[0] == 'x')
-		return (ft_write_hex(va_arg(args, unsigned int), flags, "0123456789abcdef"));
-		*/
+		return (ft_write_hexa(va_arg(args, unsigned int), flags, "0123456789abcdef"));
 	return (0);
-}
-
-void	init_flags(int *flags)
-{
-	int	i;
-
-	i = -1;
-	while (++i < 9)
-		flags[i] = 0;
 }
 
 //flags = {char, +, ' ', #, -, 0, ., padding, delim}
@@ -283,8 +342,8 @@ int	main(void)
 {
 	int	a;
 	int	b;
+	char	*str = "wwerre";
 
-	a = printf("|%-15.*u|\n", 13, -1);
-	b = ft_printf("|%-15.*u|\n", 13, -1);
-	printf("printf = %d - ft_printf = %d\n", a, b);
+	a = printf("|%- 49.25p|\n", str);
+	b = ft_printf("|%- 49.25p|\n", str);
 }
