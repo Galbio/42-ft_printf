@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:39:50 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/08 04:22:28 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/08 14:11:49 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,13 +82,13 @@ void	ft_get_bonus_flags(char *c, int *flags, va_list args)
 		flags[5] = 1;
 	else if (*c == '.')
 		flags[6] = 1;
-	else if (*c == '*' && c[-1] != '.' && !flags[7])
+	else if (*c == '*' && !flags[6] && !flags[7])
 		flags[7] = va_arg(args, int);
-	else if (*c >= '0' && *c <= '9' && c[-1] != '.' && !flags[7])
+	else if (*c >= '0' && *c <= '9' && !flags[6] && !flags[7])
 		flags[7] = ft_atoi(c);
-	else if (*c >= '0' && *c <= '9' && c[-1] == '.')
+	else if (*c >= '0' && *c <= '9' && flags[6] && !flags[8])
 		flags[8] = ft_atoi(c);
-	else if (*c == 42 && c[-1] == '.')
+	else if (*c == 42 && flags[6] && !flags[8])
 		flags[8] = va_arg(args, int);
 }
 
@@ -141,6 +141,75 @@ int	ft_write_string(char *str, int *flags)
 	return (res + i);
 }
 
+void	ft_putnbr_times(int long nb, size_t len)
+{
+	if (!len)
+		return ;
+	if (nb < 0)
+		nb = -nb;
+	ft_putnbr_times(nb / 10, len - 1);
+	write(1, &("0123456789"[nb % 10]), 1);
+}
+
+void	ft_handle_int_flags(int *flags, size_t *len, int nb)
+{
+	if (flags[6])
+		*len = ft_max(*len, flags[8]);
+	if (flags[6] && !flags[8] && !nb)
+		*len = 0;
+	if ((flags[6] || flags[4]) && flags[5])
+		flags[5] = 0;
+	if (flags[1] && flags[2])
+		flags[2] = 0;
+}
+
+int	ft_write_integer(int nb, int *flags, size_t res)
+{
+	size_t	len;
+
+	len = ft_log(nb, 10);
+	ft_handle_int_flags(flags, &len, nb);
+	if (flags[2])
+		res += ft_write_and_return(' ', 1);
+	while (!flags[4] && flags[7] && !flags[5]
+		&& (len + res + (nb < 0 || flags[1] || flags[2])) < flags[7])
+			res += ft_write_and_return(' ', 1);
+	if (nb < 0)
+		res += ft_write_and_return('-', 1);
+	else if (flags[1])
+		res += ft_write_and_return('+', 1);
+	if (flags[5])
+		len = ft_max(flags[7] - res, len);
+	ft_putnbr_times(nb, len);
+	while (flags[4] && ((len + res) < flags[7]))
+		res += ft_write_and_return(' ', 1);
+	return (res + len);
+}
+
+int	ft_write_unsigned(unsigned int nb, int *flags)
+{
+	size_t	len;
+	size_t	res;
+
+	res = 0;
+	len = ft_log(nb, 10);
+	if (flags[6])
+		len = ft_max(len, flags[8]);
+	if (flags[6] && !flags[8] && !nb)
+		len = 0;
+	if ((flags[6] || flags[4]) && flags[5])
+		flags[5] = 0;
+	while (!flags[4] && flags[7] && !flags[5]
+		&& ((len + res) < flags[7]))
+			res += ft_write_and_return(' ', 1);
+	if (flags[5])
+		len = ft_max(flags[7] - res, len);
+	ft_putnbr_times(nb, len);
+	while (flags[4] && ((len + res) < flags[7]))
+		res += ft_write_and_return(' ', 1);
+	return (res + len);
+}
+
 int	ft_start_writers(va_list args, int *flags)
 {
 	if (flags[0] == 'c')
@@ -149,11 +218,11 @@ int	ft_start_writers(va_list args, int *flags)
 		return (ft_write_and_return('%', 1));
 	else if (flags[0] == 's')
 		return (ft_write_string(va_arg(args, char *), flags));
-	/*
 	else if (flags[0] == 'd' || flags[0] == 'i')
-		return (ft_write_integer(va_arg(args, int), flags));
+		return (ft_write_integer(va_arg(args, int), flags, 0));
 	else if (flags[0] == 'u')
 		return (ft_write_unsigned(va_arg(args, unsigned int), flags));
+	/*
 	else if (flags[0] == 'x')
 		return (ft_write_hex(va_arg(args, unsigned int), flags, "0123456789abcdef"));
 		*/
@@ -212,7 +281,10 @@ int	ft_printf(const char *format, ...)
 #include <stdio.h>
 int	main(void)
 {
-	char	*str = NULL;
-	printf("|%010.6s|\n", str);
-	ft_printf("|%010.6s|\n", str);
+	int	a;
+	int	b;
+
+	a = printf("|%-15.*u|\n", 13, -1);
+	b = ft_printf("|%-15.*u|\n", 13, -1);
+	printf("printf = %d - ft_printf = %d\n", a, b);
 }
