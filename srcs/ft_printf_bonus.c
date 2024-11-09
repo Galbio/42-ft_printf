@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:39:50 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 22:49:12 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/10 00:03:09 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,8 @@ int	main(void)
 	int	b;
 	char	*str = "wwerre";
 
-	a = printf("%--p\n", (void *)-1);
-	b = ft_printf("%--p\n", (void *)-1);
+	a = printf("%1s\n", "-42");
+	b = ft_printf("%1s\n", "-42");
 	printf("%d - %d\n", a, b);
 }
 */
