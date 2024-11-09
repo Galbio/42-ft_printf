@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:42:46 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 22:04:45 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/09 22:47:32 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int				ft_strlen(char *str);
 int long		ft_max(int a, int b);
 int	long			ft_min(int a, int b);
 unsigned int	ft_log(int long nb, int base);
+unsigned int	ft_unsigned_log(unsigned int long nb);
 
 void			ft_putnbr_times(int long nb, int len);
 void			ft_putaddr_times(unsigned long nb, int len, char *base);

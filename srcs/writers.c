@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 21:54:28 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 22:01:04 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/09 22:14:41 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,22 @@ int	ft_putstrf(char *str)
 	return (1 + ft_putstrf(str));
 }
 
-int	ft_puthex(unsigned int long hex, char *base)
+int	ft_puthex(unsigned int long hex, char *base, int *res)
 {
 	if (hex >= 16)
-		return (1 + ft_puthex(hex / 16, base));
+		ft_puthex(hex / 16, base, res);
+	*res += 1;
 	return (ft_putcharf(base[hex % 16]));
 }
 
 int	ft_putaddr(unsigned long int addr)
 {
+	int	res;
+
 	if (!addr)
 		return (ft_putstrf("(nil)"));
-	return (ft_puthex(addr, "0123456789abcdef"));
+	write(1, "0x", 2);
+	res = 0;
+	ft_puthex(addr, "0123456789abcdef",  &res);
+	return (2 + res);
 }

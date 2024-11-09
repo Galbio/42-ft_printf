@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:47:50 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 21:55:43 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/09 22:47:23 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,13 @@ int long	ft_max(int a, int b)
 	if (a > b)
 		return (a);
 	return (b);
+}
+
+unsigned int	ft_unsigned_log(unsigned int long nb)
+{
+	if (nb < 16)
+		return (1);
+	return (1 + ft_unsigned_log(nb / 16));
 }
 
 int long	ft_min(int a, int b)

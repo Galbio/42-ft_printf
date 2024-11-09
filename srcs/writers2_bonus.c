@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 20:53:33 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 21:55:52 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/09 22:48:51 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,13 @@ int	ft_write_addr(unsigned long addr, int *flags)
 	int	len;
 
 	if (!addr)
-		write(1, "(nil)", 5);
-	if (!addr)
-		return (5);
+	{
+		flags[6] = 0;
+		return (ft_write_string("(nil)", flags));
+	}
 	ft_manage_addr_flags(flags, addr, &len);
 	res = 0;
-	len = ft_log(addr, 16);
+	len = ft_unsigned_log(addr);
 	while (!flags[4] && flags[7] && !flags[5]
 		&& (((flags[1] || flags[2]) + res + len + 2) < flags[7]))
 		res += ft_write_and_return(' ', 1);
@@ -80,20 +81,22 @@ int	ft_hex(unsigned int hex, int *flags, char *base)
 	int	len;
 
 	len = ft_log(hex, 16);
-	flags[1] = 0;
-	flags[2] = 0;
-	res = (flags[3] * 2);
+	res = ((hex != 0) * flags[3] * 2);
 	if (flags[6])
 		len = ft_max(len, flags[8]);
 	if (flags[6] && !flags[8] && !hex)
 		len = 0;
+	if (flags[6] && flags[5])
+		flags[5] = 0;
 	while (!flags[4] && flags[7] && !flags[5]
 		&& (res + len) < flags[7])
 		res += ft_write_and_return(' ', 1);
-	if (flags[3])
+	if (hex && flags[3])
 		write(1, "0", 1);
-	if (flags[3])
+	if (hex && flags[3])
 		return_x_base(base[10]);
+	if (flags[5])
+		len = ft_max(flags[7] - res, len);
 	ft_putaddr_times(hex, len, base);
 	while (flags[4] && ((len + res) < flags[7]))
 		res += ft_write_and_return(' ', 1);
