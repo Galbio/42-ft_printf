@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   flags_bonus.c                                      :+:      :+:    :+:   */
+/*   flags.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 20:57:02 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/10 01:28:12 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/10 01:49:01 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_fix_flags(int *flags)
 		flags[6] = 0;
 }
 
-void	ft_get_bonus_flags(char *c, int *flags, va_list args)
+void	ft_get_bonus_flags(const char *c, int *flags, va_list args)
 {
 	if (*c == '+')
 		flags[1] = 1;

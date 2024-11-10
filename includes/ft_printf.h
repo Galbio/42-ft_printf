@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf_bonus.h                                  :+:      :+:    :+:   */
+/*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:42:46 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/10 01:28:02 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/10 01:50:38 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 # include <stdlib.h>
 
 void			init_flags(int *flags);
-void			ft_get_bonus_flags(char *str, int *flags, va_list args);
+void			ft_get_bonus_flags(const char *str, int *flags, va_list args);
 
-int				ft_atoi(char *str);
+int				ft_atoi(const char *str);
 int				ft_strlen(char *str);
 int long		ft_max(int a, int b);
 int	long			ft_min(int a, int b);

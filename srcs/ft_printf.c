@@ -6,13 +6,13 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 14:39:50 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/10 01:29:35 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/10 01:47:44 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_return_flag(char c)
+int	ft_return_flag(const char c)
 {
 	const char	*flags = "cspdiuxX%";
 	size_t		i;
@@ -48,7 +48,7 @@ int	ft_start_writers(va_list args, int *flags)
 }
 
 //flags = {char, +, ' ', #, -, 0, ., padding, delim}
-int	ft_write_arg(char *str, va_list args)
+int	ft_write_arg(const char *str, va_list args)
 {
 	int	flags[9];
 	int	i;
@@ -76,9 +76,9 @@ int	ft_printf(const char *format, ...)
 	{
 		if (format[i] == '%')
 		{
-			length += ft_write_arg((char *)format + i + 1, args);
+			length += ft_write_arg(format + i + 1, args);
 			i++;
-			while (!ft_return_flag((char)format[i]))
+			while (!ft_return_flag(format[i]))
 				i++;
 		}
 		else
@@ -96,8 +96,8 @@ int	main(void)
 	int	b;
 	char	*str = "wwerre";
 
-	a = printf("{%*d}\n", -5, 42);
-	b = ft_printf("{%*d}\n", -5, 42);
+	a = printf("%00*X\n", -76, 2873118869u);
+	b = ft_printf("%00*X\n", -76, 2873118869u);
 	printf("%d - %d\n", a, b);
 }
 */

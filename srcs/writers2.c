@@ -6,7 +6,7 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 20:53:33 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/10 01:29:53 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/10 01:45:16 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int	ft_hex(unsigned int hex, int *flags, char *base)
 		len = ft_max(len, flags[8]);
 	if (flags[6] && !flags[8] && !hex)
 		len = 0;
-	if (flags[6] && flags[5])
+	if ((flags[4] || flags[6]) && flags[5])
 		flags[5] = 0;
 	while (!flags[4] && flags[7] && !flags[5]
 		&& (res + len) < flags[7])
