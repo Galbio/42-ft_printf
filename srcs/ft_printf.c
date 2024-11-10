@@ -5,73 +5,99 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/09 21:40:06 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 22:17:02 by gakarbou         ###   ########.fr       */
+/*   Created: 2024/11/07 14:39:50 by gakarbou          #+#    #+#             */
+/*   Updated: 2024/11/10 01:29:35 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	ft_start_hex(unsigned int hex, char *base)
+int	ft_return_flag(char c)
 {
-	int	res;
+	const char	*flags = "cspdiuxX%";
+	size_t		i;
+	int			res;
 
+	i = -1;
 	res = 0;
-	ft_puthex(hex, base, &res);
+	while (flags[++i])
+		if (flags[i] == c)
+			res = flags[i];
 	return (res);
 }
 
-int	ft_write_arg(char ope, va_list args)
+int	ft_start_writers(va_list args, int *flags)
 {
-	if (ope == 'c')
-		return (ft_putcharf(va_arg(args, int)));
-	else if (ope == '%')
-		return (ft_putcharf('%'));
-	else if (ope == 'd' || ope == 'i')
-		return (ft_putnbrf(va_arg(args, int)));
-	else if (ope == 'u')
-		return (ft_putnbrf((int long)va_arg(args, unsigned int)));
-	else if (ope == 's')
-		return (ft_putstrf(va_arg(args, char *)));
-	else if (ope == 'x')
-		return (ft_start_hex(va_arg(args, unsigned int), "0123456789abcdef"));
-	else if (ope == 'X')
-		return (ft_start_hex(va_arg(args, unsigned int), "0123456789ABCDEF"));
-	else if (ope == 'p')
-		return (ft_putaddr(va_arg(args, unsigned long int)));
+	if (flags[0] == 'c')
+		return (ft_write_char(va_arg(args, int), flags));
+	else if (flags[0] == '%')
+		return (ft_write_and_return('%', 1));
+	else if (flags[0] == 's')
+		return (ft_write_string(va_arg(args, char *), flags));
+	else if (flags[0] == 'd' || flags[0] == 'i')
+		return (ft_write_integer(va_arg(args, int), flags, 0));
+	else if (flags[0] == 'u')
+		return (ft_write_unsigned(va_arg(args, unsigned int), flags));
+	else if (flags[0] == 'p')
+		return (ft_write_addr(va_arg(args, unsigned long), flags));
+	else if (flags[0] == 'x')
+		return (ft_hex(va_arg(args, unsigned int), flags, "0123456789abcdef"));
+	else if (flags[0] == 'X')
+		return (ft_hex(va_arg(args, unsigned int), flags, "0123456789ABCDEF"));
 	return (0);
+}
+
+//flags = {char, +, ' ', #, -, 0, ., padding, delim}
+int	ft_write_arg(char *str, va_list args)
+{
+	int	flags[9];
+	int	i;
+
+	init_flags(flags);
+	i = -1;
+	while (!flags[0] && str[++i])
+	{
+		flags[0] = ft_return_flag(str[i]);
+		ft_get_bonus_flags(str + i, flags, args);
+	}
+	return (ft_start_writers(args, flags));
 }
 
 int	ft_printf(const char *format, ...)
 {
 	va_list	args;
-	int		res;
-	int		i;
+	size_t	i;
+	int		length;
 
-	va_start(args, format);
+	length = 0;
 	i = -1;
-	res = 0;
+	va_start(args, format);
 	while (format[++i])
 	{
 		if (format[i] == '%')
 		{
-			res += ft_write_arg(format[i + 1], args);
+			length += ft_write_arg((char *)format + i + 1, args);
 			i++;
+			while (!ft_return_flag((char)format[i]))
+				i++;
 		}
 		else
-		{
-			write(1, &(format[i]), 1);
-			res++;
-		}
+			length += ft_write_and_return(format[i], 1);
 	}
 	va_end(args);
-	return (res);
+	return (length);
 }
 
 /*
 #include <stdio.h>
 int	main(void)
 {
-	ft_printf("This %p is even stranger", (void *)-1);
+	int	a;
+	int	b;
+	char	*str = "wwerre";
+
+	a = printf("{%*d}\n", -5, 42);
+	b = ft_printf("{%*d}\n", -5, 42);
+	printf("%d - %d\n", a, b);
 }
 */

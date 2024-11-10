@@ -6,11 +6,11 @@
 /*   By: gakarbou <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/09 20:57:02 by gakarbou          #+#    #+#             */
-/*   Updated: 2024/11/09 21:55:06 by gakarbou         ###   ########.fr       */
+/*   Updated: 2024/11/10 01:28:12 by gakarbou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf_bonus.h"
+#include "ft_printf.h"
 
 void	init_flags(int *flags)
 {
@@ -19,6 +19,16 @@ void	init_flags(int *flags)
 	i = -1;
 	while (++i < 9)
 		flags[i] = 0;
+}
+
+void	ft_fix_flags(int *flags)
+{
+	if (flags[7] < 0)
+		flags[4] = 1;
+	if (flags[7] < 0)
+		flags[7] *= -1;
+	if (flags[8] < 0)
+		flags[6] = 0;
 }
 
 void	ft_get_bonus_flags(char *c, int *flags, va_list args)
@@ -43,4 +53,5 @@ void	ft_get_bonus_flags(char *c, int *flags, va_list args)
 		flags[8] = ft_atoi(c);
 	else if (*c == 42 && flags[6] && !flags[8])
 		flags[8] = va_arg(args, int);
+	ft_fix_flags(flags);
 }
